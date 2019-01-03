@@ -1181,6 +1181,17 @@ void thread_up(void) {
 						exit(EXIT_FAILURE);
 					}
 				}
+			}else {
+				struct timespec now_time;
+				clock_gettime(CLOCK_REALTIME, &now_time);
+				x = gmtime(&(now_time.tv_sec));
+				j = snprintf((char *)(buff_up + buff_index), TX_BUFF_SIZE-buff_index, ",\"time\":\"%04i-%02i-%02iT%02i:%02i:%02i.%09liZ\"", (x->tm_year)+1900, (x->tm_mon)+1, x->tm_mday, x->tm_hour, x->tm_min, x->tm_sec, pkt_utc_time.tv_nsec); /* ISO 8601 format */
+				if (j > 0) {
+					buff_index += j;
+				} else {
+					MSG("ERROR: [up] snprintf failed line %u\n", (__LINE__ - 4));
+					exit(EXIT_FAILURE);
+				}
 			}
 
 			/* Packet concentrator channel, RF chain & RX frequency, 34-36 useful chars */
